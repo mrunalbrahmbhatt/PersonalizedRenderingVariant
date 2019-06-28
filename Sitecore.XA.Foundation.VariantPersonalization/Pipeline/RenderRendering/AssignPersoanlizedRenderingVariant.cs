@@ -20,6 +20,9 @@ using System.Collections.Generic;
 using Sitecore.Mvc.Extensions;
 using Sitecore.Mvc.Analytics.Presentation;
 using Sitecore.Analytics.Pipelines.RenderingRuleEvaluated;
+using Sitecore.Rules.Actions;
+using System;
+using Sitecore.Web;
 
 namespace Sitecore.XA.Foundation.VariantPersonalization.Pipeline.RenderRendering
 {
@@ -30,7 +33,7 @@ namespace Sitecore.XA.Foundation.VariantPersonalization.Pipeline.RenderRendering
             Rendering rendering = args.Rendering;
             if (rendering.Properties["PersonlizationRules"] != null && ServiceLocator.ServiceProvider.GetService<IContext>().Site.IsSxaSite())
             {
-                Evaluate(new CustomizeRenderingArgs(rendering));
+                Evaluate(new CustomizeRenderingArgs(args.Rendering));
             }
         }
 
@@ -48,28 +51,18 @@ namespace Sitecore.XA.Foundation.VariantPersonalization.Pipeline.RenderRendering
                 if (ruleList != null && ruleList.Count != 0)
                 {
                     List<RenderingReference> references = new List<RenderingReference>
-                {
-                    renderingReference
-                };
+                    {
+                        renderingReference
+                    };
                     ConditionalRenderingsRuleContext conditionalRenderingsRuleContext = new ConditionalRenderingsRuleContext(references, renderingReference)
                     {
                         Item = item
                     };
                     conditionalRenderingsRuleContext.Parameters["mvc.rendering"] = args.Rendering;
-                    RunRules(ruleList, conditionalRenderingsRuleContext);
-                    ApplyActions(args, conditionalRenderingsRuleContext);
-                    args.IsCustomized = true;
+                    var matchingRule = GetMatchingRule(ruleList, conditionalRenderingsRuleContext);
+                    ApplyActions(args, conditionalRenderingsRuleContext, matchingRule);
                 }
             }
-        }
-
-
-        protected virtual void ApplyChanges(Rendering rendering, RenderingReference reference)
-        {
-            Assert.ArgumentNotNull(rendering, "rendering");
-            Assert.ArgumentNotNull(reference, "reference");
-            //TransferRenderingItem(rendering, reference);
-            //TransferDataSource(rendering, reference);
         }
 
         protected static RenderingReference GetRenderingReference(Rendering rendering, Language language, Database database)
@@ -86,46 +79,40 @@ namespace Sitecore.XA.Foundation.VariantPersonalization.Pipeline.RenderRendering
             return new RenderingReference(element.ToXmlNode(), language, database);
         }
 
-        private static XElement GetActionById(XElement rule, string id)
-        {
-            Assert.ArgumentNotNull(rule, "rule");
-            Assert.ArgumentNotNull(id, "id");
-            return rule.Element("actions")?.Elements("action").FirstOrDefault((XElement action) => action.GetAttributeValue("id") == id);
-        }
-
-        protected virtual void ApplyActions(CustomizeRenderingArgs args, ConditionalRenderingsRuleContext context)
+       /// <summary>
+       /// Executes all the action against matched Rule.
+       /// </summary>
+       /// <param name="args"></param>
+       /// <param name="context"></param>
+       /// <param name="matchingRule"></param>
+        protected virtual void ApplyActions(CustomizeRenderingArgs args, ConditionalRenderingsRuleContext context, Rule<ConditionalRenderingsRuleContext> matchingRule)
         {
             Assert.ArgumentNotNull(args, "args");
             Assert.ArgumentNotNull(context, "context");
-            RenderingReference renderingReference = context.References.Find((RenderingReference r) => r.UniqueId == context.Reference.UniqueId);
-            if (renderingReference == null)
+            Assert.ArgumentNotNull(matchingRule, "matchingRule");
+
+            matchingRule.Actions?.Each(a => a.Apply(context));
+
+            var parameters = WebUtil.ParseQueryString(context.Reference.Settings.Parameters, true);
+            if (!string.IsNullOrWhiteSpace(parameters["FieldNames"]))
             {
-                args.Renderer = new EmptyRenderer();
-            }
-            else
-            {
-                ApplyChanges(args.Rendering, renderingReference);
+                args.Rendering.Parameters["FieldNames"] = parameters["FieldNames"];
             }
         }
 
-        
-
-        protected virtual void RunRules(RuleList<ConditionalRenderingsRuleContext> rules, ConditionalRenderingsRuleContext context)
+        /// <summary>
+        /// Gets the matching rule from the rulelist
+        /// </summary>
+        /// <param name="rules"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual Rule<ConditionalRenderingsRuleContext> GetMatchingRule(RuleList<ConditionalRenderingsRuleContext> rules, ConditionalRenderingsRuleContext context)
         {
             Assert.ArgumentNotNull(rules, "rules");
             Assert.ArgumentNotNull(context, "context");
-            if (!RenderingRuleEvaluatedPipeline.IsEmpty())
-            {
-                rules.Evaluated += RulesEvaluatedHandler;
-            }
-            rules.RunFirstMatching(context);
-        }
 
-        private void RulesEvaluatedHandler(RuleList<ConditionalRenderingsRuleContext> ruleList, ConditionalRenderingsRuleContext ruleContext, Rule<ConditionalRenderingsRuleContext> rule)
-        {
-            RenderingRuleEvaluatedArgs args = new RenderingRuleEvaluatedArgs(ruleList, ruleContext, rule);
-            RenderingRuleEvaluatedPipeline.Run(args);
+            var matchingRule = rules.Rules.FirstOrDefault(r => r.Evaluate(context)) ?? rules.Rules.FirstOrDefault(r => r.UniqueId == ID.Null);
+            return matchingRule;
         }
-
     }
 }
