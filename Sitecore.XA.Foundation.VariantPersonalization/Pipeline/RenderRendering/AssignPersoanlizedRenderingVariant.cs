@@ -1,28 +1,23 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Sitecore.Analytics.Pipelines.GetRenderingRules;
+using Sitecore.Data;
+using Sitecore.Data.Items;
 using Sitecore.DependencyInjection;
 using Sitecore.Diagnostics;
-using Sitecore.Extensions.XElementExtensions;
+using Sitecore.Globalization;
+using Sitecore.Layouts;
 using Sitecore.Mvc.Analytics.Pipelines.Response.CustomizeRendering;
+using Sitecore.Mvc.Extensions;
 using Sitecore.Mvc.Pipelines.Response.RenderRendering;
 using Sitecore.Mvc.Presentation;
+using Sitecore.Rules;
+using Sitecore.Rules.ConditionalRenderings;
+using Sitecore.Web;
 using Sitecore.XA.Foundation.Abstractions;
 using Sitecore.XA.Foundation.Multisite.Extensions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Sitecore.Data.Items;
-using Sitecore.Layouts;
-using Sitecore.Analytics.Pipelines.GetRenderingRules;
-using Sitecore.Rules.ConditionalRenderings;
-using Sitecore.Globalization;
-using Sitecore.Data;
-using Sitecore.Rules;
-using System.Collections.Generic;
-using Sitecore.Mvc.Extensions;
-using Sitecore.Mvc.Analytics.Presentation;
-using Sitecore.Analytics.Pipelines.RenderingRuleEvaluated;
-using Sitecore.Rules.Actions;
-using System;
-using Sitecore.Web;
 
 namespace Sitecore.XA.Foundation.VariantPersonalization.Pipeline.RenderRendering
 {
@@ -31,7 +26,8 @@ namespace Sitecore.XA.Foundation.VariantPersonalization.Pipeline.RenderRendering
         public override void Process(RenderRenderingArgs args)
         {
             Rendering rendering = args.Rendering;
-            if (rendering.Properties["PersonlizationRules"] != null && ServiceLocator.ServiceProvider.GetService<IContext>().Site.IsSxaSite())
+            var siteContext = ServiceLocator.ServiceProvider.GetService<IContext>().Site;
+            if (rendering.Properties["PersonlizationRules"] != null && siteContext.IsSxaSite() && siteContext.DisplayMode != Sites.DisplayMode.Edit)
             {
                 Evaluate(new CustomizeRenderingArgs(args.Rendering));
             }
@@ -79,19 +75,21 @@ namespace Sitecore.XA.Foundation.VariantPersonalization.Pipeline.RenderRendering
             return new RenderingReference(element.ToXmlNode(), language, database);
         }
 
-       /// <summary>
-       /// Executes all the action against matched Rule.
-       /// </summary>
-       /// <param name="args"></param>
-       /// <param name="context"></param>
-       /// <param name="matchingRule"></param>
+        /// <summary>
+        /// Executes all the action against matched Rule.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="context"></param>
+        /// <param name="matchingRule"></param>
         protected virtual void ApplyActions(CustomizeRenderingArgs args, ConditionalRenderingsRuleContext context, Rule<ConditionalRenderingsRuleContext> matchingRule)
         {
             Assert.ArgumentNotNull(args, "args");
             Assert.ArgumentNotNull(context, "context");
             Assert.ArgumentNotNull(matchingRule, "matchingRule");
+            if (matchingRule?.Actions?.Count <= 0)
+                return;
 
-            matchingRule.Actions?.Each(a => a.Apply(context));
+            matchingRule.Actions?.Where(a => a.GetType().Name.StartsWith("SetRenderingVariantAction"))?.Each(a => a.Apply(context));
 
             var parameters = WebUtil.ParseQueryString(context.Reference.Settings.Parameters, true);
             if (!string.IsNullOrWhiteSpace(parameters["FieldNames"]))

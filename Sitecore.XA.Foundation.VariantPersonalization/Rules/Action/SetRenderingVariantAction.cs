@@ -33,6 +33,7 @@ namespace Sitecore.XA.Foundation.VariantPersonalization.Rules.Action
                 var parameters = WebUtil.ParseQueryString(ruleContext.Reference.Settings.Parameters, true);
                 parameters["FieldNames"] = VariantID;
                 ruleContext.Reference.Settings.Parameters = WebUtil.BuildQueryString(parameters, false, true);
+                ruleContext.Parameters["FieldNames"] = VariantID;
             }
 
         }

@@ -197,6 +197,9 @@
     <Reference Include="Sitecore.ContentSearch.Linq, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Sitecore.ContentSearch.Linq.9.1.1\lib\net471\Sitecore.ContentSearch.Linq.dll</HintPath>
     </Reference>
+    <Reference Include="Sitecore.ExperienceEditor, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sitecore.ExperienceEditor.9.1.1\lib\net471\Sitecore.ExperienceEditor.dll</HintPath>
+    </Reference>
     <Reference Include="Sitecore.Framework.Conditions, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Sitecore.Framework.Conditions.3.1.0\lib\netstandard2.0\Sitecore.Framework.Conditions.dll</HintPath>
     </Reference>
@@ -271,6 +274,9 @@
     </Reference>
     <Reference Include="Sitecore.XA.Foundation.Multisite, Version=4.8.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Sitecore.XA.Foundation.Multisite.4.8.1\lib\NET471\Sitecore.XA.Foundation.Multisite.dll</HintPath>
+    </Reference>
+    <Reference Include="Sitecore.XA.Foundation.SitecoreExtensions, Version=4.8.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sitecore.XA.Foundation.SitecoreExtensions.4.8.1\lib\NET471\Sitecore.XA.Foundation.SitecoreExtensions.dll</HintPath>
     </Reference>
     <Reference Include="Sitecore.XA.Foundation.Variants.Abstractions, Version=4.8.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Sitecore.XA.Foundation.Variants.Abstractions.4.8.1\lib\NET471\Sitecore.XA.Foundation.Variants.Abstractions.dll</HintPath>
@@ -426,6 +432,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
+    <Compile Include="Command\SwitchVariant.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Dialogs\Personalization\VariantPersonalizationForm.cs" />
     <Compile Include="Pipeline\CustomizeRendering\ResolvePersonalizedRenderingVariant.cs" />
@@ -439,9 +446,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Sitecore\shell\overide\Applications\Dialogs\Personalization\Personalization.css" />
-    <Content Include="Sitecore\shell\overide\Applications\Dialogs\Personalization\Personalization.js" />
-    <Content Include="Sitecore\shell\overide\Applications\Dialogs\Personalization\Personalization.xml" />
+    <Content Include="Website\Sitecore\shell\overide\Applications\Dialogs\Personalization\Personalization.css" />
+    <Content Include="Website\Sitecore\shell\overide\Applications\Dialogs\Personalization\Personalization.js" />
+    <Content Include="Website\Sitecore\shell\overide\Applications\Dialogs\Personalization\Personalization.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
