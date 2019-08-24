@@ -11,9 +11,10 @@ This solution will allow a content author to personalize the rendering with the 
 If rendering variant personalization has been setup by the content author, then whenever personalization rule matches it will apply the rendering variant setting to the given component at runtime.
 
 
-## Doesn't Support
+## Existing Issue
 
 Experience Editor: A user cannot see the variant applied when they change the personalization from the dropdown list during edit mode.
+
 
 ## Suggestion/Improvements
 
@@ -21,4 +22,4 @@ Developers are welcome to provided the suggestion or contirubute their improveme
 
 ## Technology
 
-This module is developed on Sitecore 9.1 and SXA 8.1
+This module is developed on Sitecore 9.2 and SXA 1.9
