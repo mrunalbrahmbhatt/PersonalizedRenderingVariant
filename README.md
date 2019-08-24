@@ -2,13 +2,13 @@
 
 ## Idea 
 
-I see rendering variant as different component compare to traditional Sitecore renderings. Currently Sitecore supports personalization on Renderings directly but not Rendering Variants. You can still achieve the personalization with in rendering variant, but not between the variant.
+I see rendering variant as different component compare to traditional Sitecore renderings. Currently Sitecore supports personalization on Renderings directly but not Rendering Variants. You can still achieve the personalization within the rendering variant, but not between the variants.
 
 ## Solution
 
-Currently, a content author has no way to assign the rendering variant to the SXA component when personalization rule matches. Thus, the purpose of this module is to allow the user to assign the rendering variants to the SXA Component as part of personalization setup.
+This solution will allow a content author to personalize the rendering with the available variants through the personalization dialogue screen.
 
-Once personalization in place, then when rule condition matches, it will apply the respective rendering variant to the rendering component.
+If rendering variant personalization has been setup by the content author, then whenever personalization rule matches it will apply the rendering variant setting to the given component at runtime.
 
 
 ## Doesn't Support:
@@ -17,7 +17,7 @@ Experience Editor: A user cannot see the variant applied when they change the pe
 
 ## Suggestion/Improvements
 
-Developers are welcome to provided the suggestion or contirubute their improvements to this repository.
+Developers are welcome to provided the suggestion or contirubute their improvements to this repository OR drop an email at it.mrunal@gmail.com
 
 ## Technology
 
