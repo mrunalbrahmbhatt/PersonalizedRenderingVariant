@@ -11,7 +11,7 @@ This solution will allow a content author to personalize the rendering with the 
 If rendering variant personalization has been setup by the content author, then whenever personalization rule matches it will apply the rendering variant setting to the given component at runtime.
 
 
-## Doesn't Support:
+## Doesn't Support
 
 Experience Editor: A user cannot see the variant applied when they change the personalization from the dropdown list during edit mode.
 
