@@ -21,7 +21,7 @@ Experience Editor: A user cannot see the variant applied when they change the pe
 Developers are welcome to provided the suggestion or contribute their improvements to this repository OR drop an email at it.mrunal@gmail.com
 
 ## Documentation
-![Documentation](https://github.com/mrunalbrahmbhatt/PersonalizedRenderingVariant/wiki)
+[Documentation](https://github.com/mrunalbrahmbhatt/PersonalizedRenderingVariant/wiki)
 
 ## Technology
 
